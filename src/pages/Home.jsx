@@ -24,5 +24,3 @@ export const Home = () => {
 
 export default Home; 
 
-
-<NombreComponente prop1={valor1} key={valor2} />
