@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 
-const ContactCard = ({ contact }) => {
+const ContactCard = ({ contact, onDelete }) => {
   const { dispatch } = useGlobalReducer();
   return (
     <div className="border-bottom p-4">
@@ -35,7 +35,7 @@ const ContactCard = ({ contact }) => {
           <button
 
             className="btn btn-link text-dark p-0"
-            onClick={() => dispatch({ type: "delete_contact", payload: contact.id })}
+            onClick={() => onDelete(contact.id)}
           >
             <i className="fa-solid fa-trash"></i>
           </button>
