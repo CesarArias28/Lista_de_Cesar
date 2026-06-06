@@ -15,12 +15,12 @@ export const Home = () => {
 			{store.contacts.map((item, index) => (
 
 
-<ContactCard contact={item} contact2={index} />
-  ))}
+				<ContactCard key={item.id} contact={item} contact2={index} />
+			))}
 		</div>
 	)
 }
 
 
-export default Home; 
+export default Home;
 

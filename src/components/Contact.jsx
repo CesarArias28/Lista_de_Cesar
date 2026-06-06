@@ -1,18 +1,21 @@
+import { Link } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+
+
 const ContactCard = ({ contact }) => {
+  const { dispatch } = useGlobalReducer();
   return (
     <div className="border-bottom p-4">
       <div className="row align-items-center">
-        {/* Avatar */}
         <div className="col-auto">
-          <img 
-            src={contact.image} 
-            alt={contact.name} 
-            className="rounded-circle" 
+          <img
+            src={contact.image}
+            alt={contact.name}
+            className="rounded-circle"
             style={{ width: '120px', height: '120px', objectFit: 'cover' }}
           />
         </div>
 
-        {/* Info */}
         <div className="col text-secondary">
           <h5 className="text-dark mb-3">{contact.name}</h5>
           <p className="mb-1">
@@ -26,18 +29,20 @@ const ContactCard = ({ contact }) => {
           </p>
         </div>
 
-        {/* Actions */}
         <div className="col-auto align-self-start">
-          <button className="btn btn-link text-dark p-0 me-3">
-            <i className="fa-solid fa-pencil"></i>
-          </button>
-          <button className="btn btn-link text-dark p-0">
+
+          <Link to={`/edit/${contact.id}`}><i className="fa-solid fa-pencil btn btn-link text-dark p-0 me-3 "></i></Link>
+          <button
+
+            className="btn btn-link text-dark p-0"
+            onClick={() => dispatch({ type: "delete_contact", payload: contact.id })}
+          >
             <i className="fa-solid fa-trash"></i>
           </button>
+
         </div>
       </div>
     </div>
   );
 };
-
 export default ContactCard;
