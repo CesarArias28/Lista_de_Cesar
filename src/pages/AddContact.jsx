@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { createContact, updateContact } from "../api.js";
 
 export const AddContact = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,31 +40,44 @@ export const AddContact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.phone || !formData.address) {
       alert("Por favor, rellena todos los campos.");
       return;
     }
 
-    if (isEdit) {
-      dispatch({
-        type: "edit_contact",
-        payload: {
-          id: Number(id) || id,
-          ...formData
+    setIsSaving(true);
+    try {
+      if (isEdit) {
+        const updated = await updateContact(formData, id);
+        if (updated) {
+          dispatch({
+            type: "edit_contact",
+            payload: updated
+          });
+          navigate("/");
+        } else {
+          alert("Error al actualizar el contacto en el servidor.");
         }
-      });
-    } else {
-      dispatch({
-        type: "add_contact",
-        payload: {
-          ...formData
+      } else {
+        const added = await createContact(formData);
+        if (added) {
+          dispatch({
+            type: "add_contact",
+            payload: added
+          });
+          navigate("/");
+        } else {
+          alert("Error al crear el contacto en el servidor.");
         }
-      });
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Ha ocurrido un error inesperado al guardar el contacto.");
+    } finally {
+      setIsSaving(false);
     }
-
-    navigate("/");
   };
 
   return (
@@ -75,7 +90,7 @@ export const AddContact = () => {
               <i className="fa-solid fa-xmark fs-4"></i>
             </Link>
           </div>
-          
+
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="name" className="form-label fw-semibold text-secondary">Nombre Completo</label>
@@ -153,10 +168,21 @@ export const AddContact = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm transition-all">
-              {isEdit ? "Guardar Cambios" : "Crear Contacto"}
+            <button 
+              type="submit" 
+              className="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm transition-all"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Guardando...
+                </>
+              ) : (
+                isEdit ? "Guardar Cambios" : "Crear Contacto"
+              )}
             </button>
-            
+
             <Link to="/" className="btn btn-link w-100 text-center text-muted mt-3 text-decoration-none">
               Volver a la agenda
             </Link>
